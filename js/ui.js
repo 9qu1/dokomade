@@ -6,10 +6,7 @@ import {
   kmOf, kmText, isDefaultName,
 } from "./data.js";
 import { src } from "./assets.js";
-import { prBannerHtml } from "./pr.js";
 import { CONFIG } from "./config.js";
-// デモ版の紹介枠（1画面1つ・ボタンから離して各パネルの下のほうに）
-const prSlot = (where) => `<div class="pr-slot">${prBannerHtml(where)}</div>`;
 import { itemScore, itemStats, statText } from "./items.js";
 
 export const $ = (s, el = document) => el.querySelector(s);
@@ -118,8 +115,7 @@ export function renderUp(game, el) {
           <div class="buy"><button class="btn" data-buy="${k}"><span class="cost" data-k="ccost"></span><span class="sub" data-k="cn"></span></button></div>
         </div>`).join("")}
       </div>
-    </div>
-    ${prSlot("up")}`;
+    </div>`;
   updateUp(game, el);
 }
 
@@ -274,8 +270,7 @@ export function renderGear(game, el, filter = "all") {
           ${it.star ? `<span class="st">${stars(it.star)}</span>` : ""}
         </div>`).join("") || `<p class="note">敵を倒すと部品を拾います。召喚でも手に入ります。</p>`}</div>
       <p class="note">部品の強さはレアリティと★で決まり、レベルは最高到達距離に合わせて自動で上がります。ガチャで当てた部品は、先へ進んでも弱くなりません。</p>
-    </div>
-    ${prSlot("gear")}`;
+    </div>`;
 }
 
 export function itemDetailHtml(game, it) {
@@ -350,8 +345,7 @@ export function renderGacha(game, el) {
         ${["R", "SR", "SSR", "UR", "LR"].map((k, i) => `<tr><td><span class="rt r${i + 1}">${k}</span></td><td>${r[i]}%</td><td>${u[i]}%</td></tr>`).join("")}
       </table>
       <p class="note">10連の最後の1枠は SR 以上（はじめて・シェアの10連は SSR 以上）が確定します。有料の要素はありません。</p>
-    </div>
-    ${prSlot("gacha")}`;
+    </div>`;
 }
 
 // 定期便の「次の便」だけ毎秒書きかえる
@@ -404,8 +398,7 @@ export function renderBoost(game, el, shareState) {
         <div class="buy"><button class="btn green" id="btn-ad-gems" ${game.adLeft("gems") > 0 ? "" : "disabled"}>▶ 広告を見る</button></div>
       </div>
       <p class="note">毎日のログインで ${100}ジェム（連続ログインで最大220）。ボスを初めて倒すと 5ジェム、${kmText(B.MEGA_EVERY)}ごとの大ボスは 50ジェム。</p>
-    </div>
-    ${prSlot("boost")}`;
+    </div>`;
 }
 export function updateBoost(game, el) {
   el.querySelectorAll("[data-left]").forEach((e) => {
@@ -453,7 +446,6 @@ export function renderRec(game, el, rankKind = "all") {
         <div><small>遊んだ時間</small><b>${fmtTime(st.playSec)}</b></div>
       </div>
     </div>
-    ${prSlot("rec")}
     <div class="card">
       <h3>実績 <small>${achN}/${ACHIEVEMENTS.length}</small></h3>
       <div class="ach-grid">${ACHIEVEMENTS.map((a) => `<div class="${s.ach[a.id] ? "on" : ""}"><b>${esc(a.name)}</b>${esc(a.desc)}・💎${a.gems}</div>`).join("")}</div>
@@ -521,6 +513,6 @@ export function settingsHtml(s) {
     <h2 style="margin-top:14px">そのほか</h2>
     <div class="acts"><button class="btn red small" id="btn-wipe">データを消して最初から</button></div>
     <p class="note">データはこの端末のブラウザにだけ保存されます。</p>
-    ${CONFIG.demo ? `<p class="note demo-note">これは<b>デモ版</b>です。内容やバランスは変わることがあります。「広告を見る」では、作者のほかのサイトの紹介が出ます（広告会社の広告はありません）。</p>` : ""}
+    ${CONFIG.demo ? `<p class="note demo-note">これは<b>デモ版</b>です。内容やバランスは変わることがあります。画面の下の広告は、忍者AdMax の広告と作者のほかのサイトの紹介です。「広告を見る」では、作者のほかのサイトの紹介が出ます。</p>` : ""}
     <p class="note"><a href="about.html" target="_blank" rel="noopener">このゲームについて（データ・ランキング・お問い合わせ）</a></p>`;
 }

@@ -10,7 +10,7 @@ import { Ranking, nameProblem } from "./ranking.js";
 import * as UI from "./ui.js";
 import { $, $$, toast, modal, closeModal, banner, esc } from "./ui.js";
 import { loadMeta, preload, src, META } from "./assets.js";
-import { prBannerHtml } from "./pr.js";
+import { rollPanelAd } from "./banner.js";
 import { fmt, fmtTime, setNumberMode, trimNum, D } from "./big.js";
 import * as B from "./balance.js";
 import { BIOMES, NEWS, RARITIES, COMPANIONS, BOOSTS, GACHA, ICONS, titleFor, MILESTONES, SKILLS, kmOf, kmText, markFor, DISTANCE_MARKS, isDefaultName } from "./data.js";
@@ -409,6 +409,7 @@ function setTab(t) {
   $$("#tabs button").forEach((b) => b.classList.toggle("on", b.dataset.tab === t));
   $$(".panel").forEach((p) => p.classList.toggle("on", p.id === `p-${t}`));
   renderPanel();
+  rollPanelAd(t);
   $(".panels").scrollTop = 0;
 }
 function renderPanel() {
@@ -821,8 +822,7 @@ async function renderQuick() {
   quick.innerHTML = `<div class="quick-grid">
     <div class="card"><h3>旅の記録 <small>${shareDone ? "" : "シェアでチケット"}</small></h3><div id="q-card"></div>
       <button class="btn pink wide" data-share="record">${shareDone ? "記録をシェアする" : "シェアしてシェア召喚チケットをもらう"}</button></div>
-    <div class="card"><h3>ブースト <small>広告を見ると使える</small></h3><div class="q-boosts">${Object.entries(BOOSTS).map(([k, b]) => `<button class="btn green" data-boost="${k}">${b.icon} ${b.name}（${b.hours}時間）<span class="sub" data-qleft="${k}"></span></button>`).join("")}</div>
-      <div class="pr-in-card">${prBannerHtml("pc", true)}</div></div>
+    <div class="card"><h3>ブースト <small>広告を見ると使える</small></h3><div class="q-boosts">${Object.entries(BOOSTS).map(([k, b]) => `<button class="btn green" data-boost="${k}">${b.icon} ${b.name}（${b.hours}時間）<span class="sub" data-qleft="${k}"></span></button>`).join("")}</div></div>
   </div>`;
   const cv = await SH.recordCard(st, game);
   $("#q-card")?.appendChild(cv);

@@ -565,3 +565,9 @@ textarea { font-size: 12px; height: 90px; resize: vertical; -webkit-user-select:
 .pr-full-head small { font-size: 12px; color: var(--muted); }
 .pr-full-desc { display: block; padding: 2px 12px 8px; font-size: 13px; line-height: 1.5; color: #e4e0ff; }
 .pr-full-go { display: block; margin: 0 12px 12px; padding: 8px; text-align: center; font-size: 14px; color: #2a1600; background: linear-gradient(#ffe066, #ffb703); border-radius: 4px; }
+
+/* ---------- 画面の下の広告枠（忍者AdMax 9割・紹介 1割・js/banner.js）。ボタンから離す（上48px・下40px） ---------- */
+.panel-ad { margin: 48px 0 40px; text-align: center; min-height: 100px; }
+.panel-ad[data-kind="house"] { text-align: left; }
+.panel-ad .pa-label { font-size: 10px; color: var(--muted); margin-bottom: 4px; letter-spacing: 0.1em; }
+.panel-ad .pa-admax { display: inline-block; max-width: 100%; overflow: hidden; background: rgba(255,255,255,0.04); }

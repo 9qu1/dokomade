@@ -67,41 +67,79 @@ export function rollPanelAd(where = "") {
   box.dataset.kind = next;
 }
 
-// ---------- 画面のいちばん下に固定する小さい広告（スマホだけ・忍者AdMax のオーバーレイ 320×50） ----------
+// ---------- 画面に固定する広告（忍者AdMax の固定表示） ----------
+//   スマホ: いちばん下にオーバーレイ 320×50（2026-10-13 ユーザー「小さめの追従型も」）
+//   PC:     右に固定 160×600 と、下に固定 300×250（同日ユーザー「PC 型の追従2個とも出していい」）
 // ゲームを始めてから1回だけ読みこむ（タイトルのスタートボタンの近くには出さない）。
-// 広告が出たら、その高さ＋6px を CSS の --ad-ov に入れる → 下のタブ・召喚の演出・ダイアログ・通知・「広告を見る」の画面を
-// その分だけ上へずらす（ボタンや「タップで進む」の場所と広告を重ねない＝規約 第10条の誤クリックの誘導に当たらないように）。
+// 出た広告の場所を測って、CSS の --ad-bottom（下の広告の高さ＋閉じるボタン＋すき間）と --ad-right（右の広告の幅＋すき間）に入れる
+// → 下のタブ・PC の画面全体・召喚の演出・ダイアログ・通知・「広告を見る」の画面を、広告と重ならない場所へ寄せる
+//   （ボタンや「タップで進む」の場所と広告を重ねない＝規約 第10条の誤クリックの誘導に当たらないように）。
 // 閉じられたり出なかったりしたら 0 に戻る。広告そのものの位置や見た目には手を入れない。
-let ovStarted = false;
-function overlayHeight() {
+//   ※右に固定の広告は、忍者AdMax が自分でページの幅を縮めて場所を作る（2026-10-13 確認）。こちらは固定表示の層だけ寄せる
+let fixedStarted = false;
+function measureFixedAds() {
   const app = document.getElementById("app");
-  let top = innerHeight;
+  let bottom = 0, right = 0;
+  const bottomBoxes = [];
   for (const f of document.querySelectorAll("iframe")) {
     if (app && app.contains(f)) continue; // 画面の中の広告枠（#panel-ad）は別
-    // いちばん外側の「固定表示」の箱を探す（閉じるボタンも同じ箱に入っている）
+    // いちばん外側の「固定表示」の箱を探す
     let box = null;
     for (let el = f; el && el !== document.body; el = el.parentElement) if (getComputedStyle(el).position === "fixed") box = el;
     if (!box) continue;
     const cs = getComputedStyle(box);
     if (cs.display === "none" || cs.visibility === "hidden" || Number(cs.opacity) === 0) continue;
     const r = box.getBoundingClientRect();
-    if (r.height < 20 || r.height > 180 || r.bottom < innerHeight - 4) continue; // 下に固定された小さい箱だけ
-    top = Math.min(top, r.top);
+    if (r.width < 20 || r.height < 20) continue;
+    if (r.height >= 300 && r.width <= 340 && r.right >= innerWidth - 4) {
+      right = Math.max(right, Math.ceil(innerWidth - r.left) + 8); // 右に固定（縦長）
+    } else if (r.height <= 300 && r.bottom >= innerHeight - 4) {
+      // 下に固定。PC の 300×250 は閉じるボタン（30px）が箱の上に出るので、その分もあける
+      const extra = isPhone() ? 6 : 38;
+      bottom = Math.max(bottom, Math.ceil(innerHeight - r.top) + extra);
+      bottomBoxes.push(r);
+    }
   }
-  return top < innerHeight ? Math.ceil(innerHeight - top) + 6 : 0;
+  // PC の2段組み: 下の広告と横の位置が重なる列だけ、下を縮める（重ならない列は縦いっぱいのまま）
+  const cols = {};
+  for (const [key, sel] of [["l", ".stage-col"], ["r", ".panel-col"]]) {
+    const el = document.querySelector(sel);
+    const c = el?.getBoundingClientRect();
+    cols[key] = c && innerWidth >= 960 && bottomBoxes.some((b) => c.left < b.right + 8 && c.right > b.left - 8) ? bottom : 0;
+  }
+  // 右の広告: 忍者AdMax はページの中身を自分の箱で包み、右に余白をつけて場所を作る（2026-10-13 確認）。
+  // こちらの余白を除いた #app の右端が、まだ広告の左端より右にあるときだけ、こちらで右をあける
+  // （こちらの余白を足して比べるので、「あける→足りた→戻す」をくり返さない）
+  const ar = app?.getBoundingClientRect();
+  const mine = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--ad-app-r")) || 0;
+  const sideLeft = innerWidth - (right - 8);
+  const appRight = right && ar && ar.right + mine > sideLeft + 2 ? right : 0;
+  return { bottom, right, colL: cols.l, colR: cols.r, appRight };
 }
-export function startOverlayAd() {
-  const id = CONFIG.banner?.admax?.overlay;
-  if (ovStarted || !id || !isPhone()) return;
+export function startFixedAds() {
+  const ad = CONFIG.banner?.admax || {};
+  // PC の下 300×250 は、縦が短い画面（880px 未満）では出さない（ゲームの画面が狭くなりすぎる）
+  const ids = isPhone() ? [[ad.overlay, "overlay"]] : [[ad.pcSide, "action"], innerHeight >= 880 ? [ad.pcBottom, "action"] : [null]];
+  const want = ids.filter(([id]) => id);
+  if (fixedStarted || !want.length) return;
   if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname) && new URLSearchParams(location.search).get("ov") === "0") return; // 確認用: ?ov=0 で出さない
-  ovStarted = true;
-  requestAdmax({ admax_id: id, type: "overlay" });
-  let last = -1, n = 0;
+  fixedStarted = true;
+  for (const [id, type] of want) requestAdmax({ admax_id: id, type });
+  const root = document.documentElement.style;
+  let last = "", n = 0;
   const measure = () => {
-    const h = overlayHeight();
-    if (h !== last) { last = h; document.documentElement.style.setProperty("--ad-ov", `${h}px`); }
+    const m = measureFixedAds();
+    const key = JSON.stringify(m);
+    if (key === last) return;
+    last = key;
+    root.setProperty("--ad-bottom", `${m.bottom}px`);
+    root.setProperty("--ad-right", `${m.right}px`);
+    root.setProperty("--ad-col-l", `${m.colL}px`);
+    root.setProperty("--ad-col-r", `${m.colR}px`);
+    root.setProperty("--ad-app-r", `${m.appRight}px`);
+    dispatchEvent(new Event("resize")); // 召喚の演出などが大きさを測り直す
   };
   const tick = () => { measure(); n++; setTimeout(tick, n < 40 ? 500 : 2000); };
   setTimeout(tick, 500);
-  addEventListener("resize", measure);
+  addEventListener("resize", () => setTimeout(measure, 50));
 }

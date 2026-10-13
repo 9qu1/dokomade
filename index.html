@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+  <title>ドコマデ列車（デモ版）— 放置で走る、ド派手ガチャの魔法列車ドットRPG</title>
+  <meta name="description" content="放置しても勝手に走る、魔法の列車の横スクロールドットRPG。線路をふさぐ魔物はどこまでも強くなる。タップで攻撃して、車両を連結して、ド派手な召喚で最強の部品を。あなたの列車はドコマデ行ける？">
+  <meta name="theme-color" content="#0e0b24">
+  <link rel="canonical" href="https://9qu1.com/dokomade/">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://9qu1.com/dokomade/">
+  <meta property="og:site_name" content="くぁくぁのつくったもの">
+  <meta property="og:title" content="ドコマデ列車（デモ版）">
+  <meta property="og:description" content="放置で走る、ド派手ガチャの魔法列車ドットRPG。あなたの列車はドコマデ行ける？">
+  <meta property="og:image" content="https://9qu1.com/dokomade/assets/ui/ogp.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="assets/ui/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div class="brand"><img src="assets/ui/logo_train.png" alt="ドコマデ列車" class="brand-logo" onerror="this.replaceWith(Object.assign(document.createElement('b'),{textContent:'ドコマデ列車',className:'brand-text'}))"></div>
+      <div class="wallet">
+        <div class="coin" title="ゴールド"><img class="px" src="assets/icons/i_coin.png" alt=""><span id="gold">0</span></div>
+        <div class="coin gem" title="ジェム"><img class="px" src="assets/icons/i_gem.png" alt=""><span id="gems">0</span></div>
+      </div>
+      <button class="icon-btn" id="btn-settings" aria-label="設定">⚙</button>
+    </header>
+
+    <main class="layout">
+      <section class="stage-col">
+        <div class="battle" id="battle">
+          <canvas id="scene"></canvas>
+          <div class="hud-stage">
+            <div class="st-num"><b id="stage-num">10</b>km</div>
+            <div class="st-sub"><span id="biome-name">はじまりの草原</span><span id="wave-dots" class="wave-dots"></span></div>
+          </div>
+          <div class="hud-best">最高 <b id="best-num">10</b>km<div class="rank-hud" id="rank-hud" hidden></div></div>
+          <div class="enemy-bar" id="enemy-bar">
+            <div class="en-name" id="en-name"></div>
+            <div class="hp"><i id="hp-fill"></i><span id="hp-text"></span></div>
+            <div class="boss-timer" id="boss-timer" hidden><i id="boss-fill"></i><span id="boss-left"></span></div>
+          </div>
+          <div class="boost-chips" id="boost-chips"></div>
+          <button class="boss-btn" id="boss-btn" hidden>ボスに挑む！</button>
+          <div class="warning" id="warning" hidden><div>WARNING</div><small id="warning-name"></small></div>
+          <div class="banner" id="banner" hidden></div>
+          <div class="tap-hint" id="tap-hint">画面をタップで攻撃！</div>
+          <div class="combo" id="combo" hidden><b id="combo-n">0</b><small>COMBO</small><i id="combo-mul"></i></div>
+          <div class="fever-bar" id="fever-bar"><i id="fever-fill"></i><span id="fever-text">FEVER</span></div>
+        </div>
+        <div class="skill-bar" id="skill-bar"></div>
+        <div class="power-line">
+          <div><small>DPS</small><b id="dps">0</b></div>
+          <div><small>タップ</small><b id="tapdmg">0</b></div>
+          <div class="pl-soul" id="pl-soul" hidden><img class="px pl-ic" src="assets/icons/i_soul.png" alt=""><small>炎の力</small><b id="soulmul">×1</b></div>
+        </div>
+        <div class="ticker"><div class="ticker-in" id="ticker"></div></div>
+        <div class="quick" id="quick"></div>
+      </section>
+
+      <section class="panel-col">
+        <nav class="tabs" id="tabs">
+          <button data-tab="up" class="on"><span class="ti">⚔</span><span>強化</span></button>
+          <button data-tab="gear"><span class="ti">⚙</span><span>部品</span><i class="dot" id="dot-gear" hidden></i></button>
+          <button data-tab="gacha"><span class="ti">✦</span><span>召喚</span><i class="dot" id="dot-gacha" hidden></i></button>
+          <button data-tab="boost"><span class="ti">⏩</span><span>ブースト</span><i class="dot" id="dot-boost" hidden></i></button>
+          <button data-tab="rec"><span class="ti">👑</span><span>順位</span><i class="dot" id="dot-rec" hidden></i></button>
+        </nav>
+        <div class="panels">
+          <div class="panel on" id="p-up"></div>
+          <div class="panel" id="p-gear"></div>
+          <div class="panel" id="p-gacha"></div>
+          <div class="panel" id="p-boost"></div>
+          <div class="panel" id="p-rec"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+  <div id="modal" class="modal" hidden><div class="modal-box" id="modal-box"></div></div>
+  <div id="title" class="title-screen">
+    <div class="title-bg"></div>
+    <div class="title-in">
+      <div class="title-top">
+        <img src="assets/ui/logo_train.png" alt="ドコマデ列車" class="title-logo" onerror="this.style.display='none'">
+        <span class="demo-badge">デモ版</span>
+        <p class="title-catch">放置でも走りつづける魔法の列車。<br>線路をふさぐ魔物は、どこまでも強くなる。</p>
+      </div>
+      <div class="title-bottom">
+        <div class="title-vs" id="title-vs" hidden></div>
+        <button class="btn gold big" id="btn-start">出発進行！</button>
+        <p class="title-note">音が出ます（設定でオフにできます）</p>
+        <p class="title-links"><a href="about.html" target="_blank" rel="noopener">このゲームについて</a><span>・</span><a href="https://9qu1.com/?utm_source=dokomade&amp;utm_medium=pr&amp;utm_content=title" target="_blank" rel="noopener">くぁくぁのつくったもの</a></p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

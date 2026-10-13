@@ -11,7 +11,8 @@ export const CONFIG = {
   //   ID は忍者AdMax の管理画面の広告枠（ドコマデ列車 SP320x100 / PC300x250・一般・アダルト等を出さない・オーバーレイなし）
   banner: {
     admaxShare: 0.9,
-    admax: { sp: "ab2e2a84f35827d17f576316540e84fa", pc: "2ef53cae1a6819bd795c1373e384bfaf" },
+    // overlay: スマホだけ・画面のいちばん下に固定する小さい広告（オーバーレイ 320×50・2026-10-13 ユーザー「小さめの追従型も」）。PC は無し
+    admax: { sp: "ab2e2a84f35827d17f576316540e84fa", pc: "2ef53cae1a6819bd795c1373e384bfaf", overlay: "afbcd14320cf1dd4d20d88f3e4c4158b" },
   },
   // リワード広告（動画）
   //   provider: "pr"（デモ版：作者のほかのサイトの紹介を数秒）| "mock"（テスト表示）| "free"（広告なしで報酬だけ）

@@ -10,7 +10,7 @@ import { Ranking, nameProblem } from "./ranking.js";
 import * as UI from "./ui.js";
 import { $, $$, toast, modal, closeModal, banner, esc } from "./ui.js";
 import { loadMeta, preload, src, META } from "./assets.js";
-import { rollPanelAd } from "./banner.js";
+import { rollPanelAd, startOverlayAd } from "./banner.js";
 import { fmt, fmtTime, setNumberMode, trimNum, D } from "./big.js";
 import * as B from "./balance.js";
 import { BIOMES, NEWS, RARITIES, COMPANIONS, BOOSTS, GACHA, ICONS, titleFor, MILESTONES, SKILLS, kmOf, kmText, markFor, DISTANCE_MARKS, isDefaultName } from "./data.js";
@@ -68,6 +68,8 @@ function afterStart() {
   rank.start().then(() => refreshRankHud());
   // ガチャ演出の絵は遊び始めてから裏で先読み（最初の召喚で絵が遅れないように）
   setTimeout(() => preload([["fx", "fx_circle"], ["ui", "gacha_hall"], ["ui", "card_back"], ["fx", "cut_dragon"], ["fx", "cut_phoenix"], ["fx", "cut_goddess"], ["icon", "i_ticket"], ["icon", "i_soul"], ["icon", "i_chest"]]), 4000);
+  // スマホだけ: 画面のいちばん下に固定する小さい広告（js/banner.js）
+  startOverlayAd();
 }
 function runQueue(q) {
   const next = q.shift();

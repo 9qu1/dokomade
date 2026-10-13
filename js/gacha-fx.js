@@ -57,7 +57,8 @@ export class GachaFX {
     if (!this.el) return;
     const dpr = Math.min(2, window.devicePixelRatio || 1);
     this.dpr = dpr;
-    this.W = window.innerWidth; this.H = window.innerHeight;
+    // 演出の箱の大きさ（スマホで下に固定の広告が出ているときは、その分だけ低い）
+    this.W = this.el?.clientWidth || window.innerWidth; this.H = this.el?.clientHeight || window.innerHeight;
     this.cv.width = Math.round(this.W * dpr); this.cv.height = Math.round(this.H * dpr);
     this.g.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
@@ -289,9 +290,9 @@ export class GachaFX {
     if (!this.el) this.build();
     this.running = true; this.skip = false; this.fast = false;
     this.level = handlers.level || 1;
-    this.resize();
     const el = this.el;
     el.className = "gx on";
+    this.resize(); // 見えるようにしてから測る（下に固定の広告のぶん低くなっている）
     this.cardsEl.innerHTML = ""; this.bigEl.innerHTML = ""; this.slamsEl.innerHTML = ""; this.cutEl.innerHTML = ""; this.resultEl.innerHTML = ""; this.cracksEl.className = "gx-cracks"; this.cracksEl.innerHTML = "";
     el.querySelector(".gx-hint").style.display = "";
     el.querySelector(".gx-skip").style.display = "";

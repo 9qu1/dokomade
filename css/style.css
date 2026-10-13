@@ -252,7 +252,7 @@ b, strong { font-weight: normal; }
 /* 装備 */
 .slots { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 .slot { position: relative; aspect-ratio: 1; background: #0b0822; border-radius: 4px; box-shadow: inset 0 0 0 2px #2b2470; display: grid; place-items: center; cursor: pointer; }
-.slot img { width: 70%; image-rendering: pixelated; }
+.slot img { width: 70%; aspect-ratio: 1; object-fit: contain; image-rendering: pixelated; } /* 絵は縦長・横長がまざる（長い辺が40ドット）→ 正方形に収めて、どの絵も同じ倍率にする */
 .slot .sl { position: absolute; left: 4px; top: 2px; font-size: 10px; color: var(--muted); }
 .slot .lv { position: absolute; right: 4px; bottom: 2px; font-size: 10px; color: #fff; text-shadow: 0 1px 0 #000; }
 .gear-sum { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 12px; font-size: 12px; margin-top: 10px; }
@@ -264,7 +264,7 @@ b, strong { font-weight: normal; }
 .inv-tools .seg button.on { color: var(--gold); box-shadow: inset 0 0 0 2px var(--gold); }
 .inv { display: grid; grid-template-columns: repeat(auto-fill, minmax(62px, 1fr)); gap: 6px; }
 .it { position: relative; aspect-ratio: 1; border-radius: 4px; cursor: pointer; display: grid; place-items: center; background: #0b0822; box-shadow: inset 0 0 0 2px var(--rN); }
-.it img { width: 72%; image-rendering: pixelated; }
+.it img { width: 72%; aspect-ratio: 1; object-fit: contain; image-rendering: pixelated; }
 .it.r1 { box-shadow: inset 0 0 0 2px var(--rR); }
 .it.r2 { box-shadow: inset 0 0 0 2px var(--rSR); background: radial-gradient(rgba(192,124,255,0.25), #0b0822 70%); }
 .it.r3 { box-shadow: inset 0 0 0 2px var(--rSSR), 0 0 8px rgba(255,210,63,0.4); background: radial-gradient(rgba(255,210,63,0.3), #0b0822 70%); }
@@ -283,7 +283,7 @@ b, strong { font-weight: normal; }
 .awaken { margin: 8px 0 4px; }
 .item-detail { text-align: center; }
 .item-detail .big-ic { width: 128px; height: 128px; margin: 4px auto 6px; display: grid; place-items: center; background: radial-gradient(#3a3190, #120e33 70%); border-radius: 8px; }
-.item-detail .big-ic img { width: 100px; image-rendering: pixelated; }
+.item-detail .big-ic img { width: 100px; height: 100px; object-fit: contain; image-rendering: pixelated; }
 .item-detail .nm { font-size: 18px; margin: 4px 0; }
 .stat-list { text-align: left; font-size: 13px; background: #0b0822; border-radius: 4px; padding: 8px 10px; margin: 8px 0; }
 .stat-list div { display: flex; justify-content: space-between; }
@@ -443,7 +443,7 @@ textarea { font-size: 12px; height: 90px; resize: vertical; -webkit-user-select:
 .gx-card.r4 .gx-card-front::before, .gx-card.r5 .gx-card-front::before { content: ""; position: absolute; inset: 0; padding: 3px; border-radius: 6px; background: var(--rainbow); background-size: 200% 100%; animation: rainbowMove 1s linear infinite; -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
 .gx-card.r5 .gx-card-front { background: radial-gradient(#ffffff 0%, #b45bff 35%, #0d0a26 75%); box-shadow: 0 0 0 2px #000, 0 0 30px #fff; }
 .gx-card-art { width: 70%; aspect-ratio: 1; display: grid; place-items: center; }
-.gx-card-art img { width: 100%; image-rendering: pixelated; filter: drop-shadow(0 2px 0 #000); }
+.gx-card-art img { width: 100%; aspect-ratio: 1; object-fit: contain; image-rendering: pixelated; filter: drop-shadow(0 2px 0 #000); }
 .gx-card-front .rt { font-size: clamp(10px, 2.6vw, 14px); position: relative; }
 .gx-card-front span { font-size: clamp(8px, 2vw, 11px); text-align: center; line-height: 1.2; max-height: 2.4em; overflow: hidden; position: relative; text-shadow: 0 1px 0 #000; }
 .gx-cards.done .gx-card { opacity: 1; transform: none; animation: none; }
@@ -454,7 +454,7 @@ textarea { font-size: 12px; height: 90px; resize: vertical; -webkit-user-select:
 .gx-big.r2 .gx-big-rays { background: repeating-conic-gradient(from 0deg, rgba(192,124,255,0.28) 0 6deg, transparent 6deg 18deg); }
 .gx-big.r4 .gx-big-rays, .gx-big.r5 .gx-big-rays { background: repeating-conic-gradient(from 0deg, #ff4d6d33 0 5deg, transparent 5deg 10deg, #ffe06633 10deg 15deg, transparent 15deg 20deg, #48cae433 20deg 25deg, transparent 25deg 30deg, #9d4edd33 30deg 35deg, transparent 35deg 40deg); animation: spin 5s linear infinite; }
 .gx-big-item { position: relative; width: min(58vw, 300px); aspect-ratio: 1; display: grid; place-items: center; animation: itemDrop 0.7s cubic-bezier(.2,1.5,.4,1); }
-.gx-big-item img { position: relative; width: 82%; image-rendering: pixelated; filter: drop-shadow(0 6px 0 rgba(0,0,0,0.6)) drop-shadow(0 0 16px rgba(255,255,255,0.5)); animation: floaty 2s ease-in-out infinite; }
+.gx-big-item img { position: relative; width: 82%; aspect-ratio: 1; object-fit: contain; image-rendering: pixelated; filter: drop-shadow(0 6px 0 rgba(0,0,0,0.6)) drop-shadow(0 0 16px rgba(255,255,255,0.5)); animation: floaty 2s ease-in-out infinite; }
 .gx-big-halo { position: absolute; inset: -10%; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.85) 0%, rgba(255,210,63,0.45) 30%, transparent 65%); animation: halo 1.4s ease-in-out infinite alternate; }
 .gx-big.r2 .gx-big-halo { background: radial-gradient(circle, rgba(255,255,255,0.7) 0%, rgba(192,124,255,0.45) 30%, transparent 65%); }
 .gx-big.r4 .gx-big-halo { background: radial-gradient(circle, #fff 0%, rgba(255,91,208,0.55) 25%, rgba(72,202,228,0.35) 45%, transparent 68%); animation: halo 0.8s ease-in-out infinite alternate, hueSpin 2s linear infinite; }

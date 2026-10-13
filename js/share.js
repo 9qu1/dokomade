@@ -150,7 +150,8 @@ export async function gachaCard(result) {
     g.fillRect(cx + 10, cy, cw - 20, ch - 20);
     g.fillStyle = "#16112e"; g.fillRect(cx + 16, cy + 6, cw - 32, ch - 32);
     const ic = img("icon", it.icon);
-    if (ic) px(g, ic, cx + cw / 2 - ic.naturalWidth * 1.6, cy + 24, 3.2);
+    // 絵は縦長・横長がまざる（長い辺が40ドット）→ 40×40 の枠の真ん中に置く
+    if (ic) px(g, ic, cx + cw / 2 - ic.naturalWidth * 1.6, cy + 24 + (40 - ic.naturalHeight) * 1.6, 3.2);
     outlineText(g, RARITIES[it.r].name, cx + cw / 2, cy + ch - 34, 30, it.r >= 3 ? "#ffe066" : "#ffffff", "#140c28", 6);
   });
   g.fillStyle = "rgba(10,8,30,0.85)"; g.fillRect(0, H - 70, W, 70);

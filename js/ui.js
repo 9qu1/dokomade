@@ -41,8 +41,13 @@ export function modal(html, { onOpen, closable = true } = {}) {
 export const closeModal = () => modalClose?.();
 export const modalOpen = () => !$("#modal").hidden;
 
-export function banner(html, ms = 2200) {
+// wait: いま出ている帯が出てから wait ミリ秒たつまで待ってから出す（ボス撃破の帯を、すぐ後の「新しい景色」の帯で消さない）
+let bannerAt = 0;
+export function banner(html, ms = 2200, { wait = 0 } = {}) {
   const b = $("#banner");
+  const left = bannerAt + wait - performance.now();
+  if (wait && left > 0 && !b.hidden) { setTimeout(() => banner(html, ms), left); return; }
+  bannerAt = performance.now();
   b.hidden = false;
   b.innerHTML = html;
   b.style.animation = "none"; void b.offsetWidth; b.style.animation = "";

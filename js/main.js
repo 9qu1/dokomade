@@ -361,7 +361,7 @@ game.on("bossFail", () => {
   banner(`時間切れ…<small>ひとつ前の区間で力をためます（強くなったら自動で再挑戦）</small>`, 2600);
 });
 game.on("biome", (e) => {
-  banner(`${esc(e.biome.name)}<small>${kmText(e.stage)}地点〜</small>`, 2400);
+  banner(`${esc(e.biome.name)}<small>${kmText(e.stage)}地点〜</small>`, 2400, { wait: 1500 });
   preload([["bg", e.biome.id]]);
   pushNews(`【速報】ドコマデ列車、${e.biome.name}に到着`);
 });

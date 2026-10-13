@@ -1,7 +1,7 @@
 // 画面の下の広告枠（1画面に1つ・タブのパネルの外＝描き直しで消えない）
 //   忍者AdMax（config.js の banner.admaxShare＝9割）と、くぁくぁのほかのサイトの紹介（残りの1割）
 //   ・タブを切りかえたときに選び直す。ただし前に選んでから30秒たっていなければそのまま（広告を続けて読みこまない）
-//   ・忍者AdMax は非同期タグ（SPA で表示できる形）。スマホの UA には SP 枠、それ以外には PC 枠（SP 枠はスマホにしか配信されない）
+//   ・忍者AdMax は非同期タグ。出すたびに t.js を動かし直す（requestAdmax）。スマホの UA には SP 枠、それ以外には PC 枠（SP 枠はスマホにしか配信されない）
 //   ・忍者AdMax の規約（第10条）に合わせて、ボタンから離して置く・報酬と引きかえに見せない（「広告を見る」の画面は紹介だけ）
 import { CONFIG } from "./config.js";
 import { prBannerHtml } from "./pr.js";
@@ -13,13 +13,26 @@ let kind = "";
 
 const isPhone = () => /iPhone|iPod|Android.+Mobile|Mobile.+Firefox/i.test(navigator.userAgent);
 
-function loadAdmaxScript() {
-  if (document.querySelector('script[src="https://adm.shinobi.jp/st/t.js"]')) return;
-  const s = document.createElement("script");
-  s.src = "https://adm.shinobi.jp/st/t.js";
-  s.async = true;
-  s.charset = "utf-8";
-  document.body.appendChild(s);
+// 忍者AdMax の非同期タグの読みこみ（t.js）は、動いたときの window.admaxads を1回だけ読む（あとから push した分は読まない。
+// 2026-10-13 に t.js を読んで確認: window.__admax_tag__ が無いときだけ一覧を読む）。
+// → 出したい分を少しためて、window.admaxads を「新しい分だけ」にし、「もう読んだ」の印を外して t.js をもう一度動かす
+let pending = [];
+let flushTimer = 0;
+function requestAdmax(entry) {
+  pending.push(entry);
+  clearTimeout(flushTimer);
+  flushTimer = setTimeout(() => {
+    window.admaxads = pending;
+    pending = [];
+    window.__admax_tag__ = undefined;
+    document.querySelectorAll("script[data-admax-loader]").forEach((x) => x.remove());
+    const s = document.createElement("script");
+    s.src = "https://adm.shinobi.jp/st/t.js";
+    s.async = true;
+    s.charset = "utf-8";
+    s.dataset.admaxLoader = "1";
+    document.body.appendChild(s);
+  }, 50);
 }
 
 function showAdmax() {
@@ -27,8 +40,7 @@ function showAdmax() {
   const id = sp ? CONFIG.banner.admax.sp : CONFIG.banner.admax.pc;
   const [w, h] = sp ? [320, 100] : [300, 250];
   box.innerHTML = `<div class="pa-label">広告</div><div class="pa-admax" style="width:${w}px;height:${h}px"><div class="admax-ads" data-admax-id="${id}" style="display:inline-block;width:${w}px;height:${h}px;"></div></div>`;
-  (window.admaxads = window.admaxads || []).push({ admax_id: id, type: "banner" });
-  loadAdmaxScript();
+  requestAdmax({ admax_id: id, type: "banner" });
   // 広告が来ると枠の中に iframe が入る。5秒たっても空なら（審査中・在庫切れ）空の箱を残さず紹介にする
   const slot = box.querySelector(".admax-ads");
   setTimeout(() => {
@@ -83,8 +95,7 @@ export function startOverlayAd() {
   if (ovStarted || !id || !isPhone()) return;
   if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname) && new URLSearchParams(location.search).get("ov") === "0") return; // 確認用: ?ov=0 で出さない
   ovStarted = true;
-  (window.admaxads = window.admaxads || []).push({ admax_id: id, type: "overlay" });
-  loadAdmaxScript();
+  requestAdmax({ admax_id: id, type: "overlay" });
   let last = -1, n = 0;
   const measure = () => {
     const h = overlayHeight();
